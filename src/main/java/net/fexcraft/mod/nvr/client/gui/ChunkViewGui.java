@@ -55,7 +55,7 @@ public class ChunkViewGui extends GuiContainer {
 	@Override
 	public void onGuiClosed(){
         super.onGuiClosed();
-        this.array.clear();
+        array.clear();
         state = "Pending... (waiting for data)";
     }
 

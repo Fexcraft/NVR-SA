@@ -11,6 +11,7 @@ import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.DistrictType;
 import net.fexcraft.mod.nvr.server.NVR;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class District {
 	
@@ -21,7 +22,7 @@ public class District {
 	public UUID manager, creator;
 	public long created, changed;
 	public ArrayList<Integer> neighbors = new ArrayList<Integer>();
-	public double previncome, tax;
+	public double previncome, tax, price;
 	
 	public District(){}
 	
@@ -43,6 +44,7 @@ public class District {
 		dis.previncome = JsonUtil.getIfExists(obj, "previncome", 0).doubleValue();
 		dis.tax = JsonUtil.getIfExists(obj, "tax", 0).doubleValue();
 		dis.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
+		dis.price = JsonUtil.getIfExists(obj, "price", 0).doubleValue();
 		//
 		return dis;
 	}
@@ -65,6 +67,7 @@ public class District {
 			obj.addProperty("previncome", previncome);
 			obj.addProperty("tax", tax);
 			obj.addProperty("color", colour);
+			obj.addProperty("price", price);
 			//
 			obj.addProperty("last_save", Time.getDate());
 			JsonUtil.write(getFile(id), obj);
@@ -72,6 +75,11 @@ public class District {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	public boolean canEdit(EntityPlayer entityplayer){
+		Player player = NVR.getPlayerData(entityplayer);
+		return player == null ? false : (manager.equals(player.uuid) || municipality.management.contains(player.uuid) || municipality.province.ruler.equals(player.uuid) || municipality.province.nation.canEditDistrict(player.uuid));
 	}
 	
 }

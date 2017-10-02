@@ -115,5 +115,16 @@ public class Nation {
 		}
 		return false;
 	}
+
+	public boolean canEditDistrict(UUID uuid){
+		switch(type){
+			case ANARCHY: return false;
+			case AUTOCRACY: return incharge.equals(uuid);
+			case DEMOCRACY: return false;
+			case MONARCHY: return incharge.equals(uuid) || gov.contains(uuid);
+			default: break;
+		}
+		return false;
+	}
 	
 }

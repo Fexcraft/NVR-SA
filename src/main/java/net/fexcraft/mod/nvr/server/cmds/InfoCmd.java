@@ -200,6 +200,7 @@ public class InfoCmd extends CommandBase {
 				print.chat(sender, "&9Manager: &3" + (dis.manager == null ? "no one" : Static.getPlayerNameByUUID(dis.manager)));
 				print.chat(sender, "&9Prev. Income: &7" + dis.previncome);
 				print.chat(sender, "&9Chunk Tax: &3" + dis.tax);
+				print.chat(sender, "&9Color: &6" + dis.colour);
 				print.chat(sender, space);
 				print.chat(sender, "&9Creator: &7" + Static.getPlayerNameByUUID(dis.creator));
 				print.chat(sender, "&9Created: &7" + Time.getAsString(dis.created));

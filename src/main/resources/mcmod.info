@@ -1,16 +1,16 @@
 [
-{
-  "modid": "nvr",
-  "name": "NVR SA",
-  "description": "Nations v.5 'R'",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["FEX___96"],
-  "credits": "",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+	{
+	  "modid": "nvr",
+	  "name": "NVR StandAlone",
+	  "description": "Nations v.5 'R'",
+	  "version": "${version}",
+	  "mcversion": "${mcversion}",
+	  "url": "",
+	  "updateUrl": "",
+	  "authorList": ["FEX___96"],
+	  "credits": "",
+	  "logoFile": "",
+	  "screenshots": [],
+	  "dependencies": ["fcl"]
+	}
 ]
