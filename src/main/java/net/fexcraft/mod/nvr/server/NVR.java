@@ -1,6 +1,7 @@
 package net.fexcraft.mod.nvr.server;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -34,11 +35,13 @@ import net.fexcraft.mod.nvr.server.events.ChunkEvents;
 import net.fexcraft.mod.nvr.server.events.PlayerEvents;
 import net.fexcraft.mod.nvr.server.network.WebServer;
 import net.fexcraft.mod.nvr.server.util.Permissions;
+import net.fexcraft.mod.nvr.server.util.Pregen;
 import net.fexcraft.mod.nvr.server.util.Sender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -46,9 +49,8 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
-import scala.actors.threadpool.Arrays;
 
-@Mod(modid = NVR.MODID, name = "NVR Standalone", version="xxx.xxx", acceptableRemoteVersions = "*", serverSideOnly = true, dependencies = "required-after:fcl")
+@Mod(modid = NVR.MODID, name = "NVR Standalone", version="xxx.xxx", acceptableRemoteVersions = "*", acceptedMinecraftVersions = "*", serverSideOnly = true, dependencies = "required-after:fcl")
 public class NVR {
 	
 	@Mod.Instance(NVR.MODID)
@@ -61,6 +63,7 @@ public class NVR {
 	public static File PATH, CHUNK_DIR, DISTRICT_DIR, MUNICIPALITY_DIR, PROVINCE_DIR, NATION_DIR, IMAGE_DIR;
 	public static final Log LOGGER = new Log("NVR", "&0[&4NVR&0]&7 ");
 	public static WebServer webserver;
+	private static Pregen pregen = new Pregen();
 
 	public static final TreeMap<DoubleKey, Chunk> CHUNKS = new TreeMap<DoubleKey, Chunk>();
 	public static final TreeMap<Integer, District> DISTRICTS = new TreeMap<Integer, District>();
@@ -99,6 +102,8 @@ public class NVR {
 		MinecraftForge.EVENT_BUS.register(new ChunkEvents());
 		MinecraftForge.EVENT_BUS.register(new PlayerEvents());
 		//
+		MinecraftForge.EVENT_BUS.register(pregen);
+		//
 		Permissions.register();
 		PlayerPerms.addAdditionalData(Player.class);
 		//
@@ -114,7 +119,6 @@ public class NVR {
 		webserver = new WebServer();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Mod.EventHandler
 	public static void postInit(FMLPostInitializationEvent event){
 		Arrays.asList(NATION_DIR.listFiles()).forEach((nationfile) -> {
@@ -284,6 +288,9 @@ public class NVR {
 			dis.save();
 			DISTRICTS.put(0, dis);
 		}
+		//
+		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
+		pregen.load();
 	}
 	
 	@Mod.EventHandler
@@ -304,6 +311,7 @@ public class NVR {
 			chunk.save();
 		});*/ //Actually they should be unloaded on server stop, so another event handles this.
 		WebServer.end(0);
+		pregen.save();
 	}
 	
 	public static final Player getPlayerData(EntityPlayer player){

@@ -1,6 +1,7 @@
 package net.fexcraft.mod.nvr.server.util;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
-import scala.actors.threadpool.Arrays;
 
 public class Sender {
 	
