@@ -9,4 +9,4 @@ You're free to use this on your server/modpack/whatever as long you don't break 
 Beware though that I mainly made this for my Server, thus no help or similiar guaranteed.
 
 # Discord
-https://discord.gg/Tx4jy9v
+https://discord.gg/rMXcrsv
