@@ -85,5 +85,9 @@ public class Municipality {
 			e.printStackTrace();
 		}
 	}
+
+	public long districts(){
+		return NVR.DISTRICTS.values().stream().filter(dis -> dis.municipality.id == this.id).count();
+	}
 	
 }

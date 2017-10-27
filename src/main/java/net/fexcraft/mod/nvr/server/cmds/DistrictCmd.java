@@ -1,11 +1,15 @@
 package net.fexcraft.mod.nvr.server.cmds;
 
+import java.util.UUID;
+
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
+import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.DistrictType;
 import net.fexcraft.mod.nvr.server.NVR;
 import net.fexcraft.mod.nvr.server.data.District;
+import net.fexcraft.mod.nvr.server.data.Municipality;
 import net.fexcraft.mod.nvr.server.util.Sender;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -41,12 +45,60 @@ public class DistrictCmd extends CommandBase {
 			print.chat(sender, "/dis <id> set <option> <value>");
 			print.chat(sender, "/dis <id> reset <option>");
 			print.chat(sender, "/dis <id> types");
+			print.chat(sender, InfoCmd.space);
+			print.chat(sender, "/dis create <municipalityid> <name...>");
 			return;
 		}
 		boolean isp = sender.getCommandSenderEntity() instanceof EntityPlayer;
 		EntityPlayer player = isp ? (EntityPlayer)sender.getCommandSenderEntity() : null;
 		if(args.length < 2){
 			print.chat(sender, "Missing Arguments.");
+			return;
+		}
+		if(args[0].equals("create")){
+			Municipality mun = NVR.getMunicipality(args, 1);
+			if(mun == null){
+				print.chat(sender, "Municipality not found.");
+				return;
+			}
+			if(isp && !mun.management.contains(player.getGameProfile().getId())){
+				print.chat(sender, "No Permission.");
+				return;
+			}
+			if(mun.districts() >= mun.type.districtLimit()){
+				print.chat(sender, "Current District limit reached, your Municipality needs more citizen!");
+				return;
+			}
+			if(args.length < 3){
+				print.chat(sender, "Missing District Name.");
+				return;
+			}
+			String name = args[2];
+			if(args.length > 3){
+				for(int i = 3; i < args.length; i++){
+					name = " " + args[i];
+				}
+			}
+			if(name == null){
+				print.chat(sender, "NAME NULL, ERROR;");
+				return;
+			}
+			District dis = new District();
+			dis.id = NVR.DISTRICTS.lastKey() + 1;
+			dis.type = DistrictType.UNSPECIFIED;
+			dis.name = name;
+			dis.municipality = mun;
+			dis.manager = null;
+			dis.creator = isp ? player.getGameProfile().getId() : UUID.fromString(NVR.CONSOLE_UUID);
+			dis.created = Time.getDate();
+			dis.changed = Time.getDate();
+			dis.neighbors = new ArrayList<Integer>();
+			dis.previncome = 0;
+			dis.tax = 0;
+			dis.colour = "#f0f0f0";
+			dis.price = 0;
+			NVR.DISTRICTS.put(dis.id, dis);
+			print.chat(sender, "District created with ID '" + dis.id + "'!");
 			return;
 		}
 		District dis = NVR.getDistrict(args, 0);

@@ -31,5 +31,9 @@ public enum MunicipalityType {
 	public final String getTitle(){
 		return title;
 	}
+
+	public int districtLimit(){
+		return dis;
+	}
 	
 }
