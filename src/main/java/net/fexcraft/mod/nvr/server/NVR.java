@@ -27,6 +27,7 @@ import net.fexcraft.mod.nvr.server.cmds.MunicipalityCmd;
 import net.fexcraft.mod.nvr.server.data.Chunk;
 import net.fexcraft.mod.nvr.server.data.District;
 import net.fexcraft.mod.nvr.server.data.DoubleKey;
+import net.fexcraft.mod.nvr.server.data.Message;
 import net.fexcraft.mod.nvr.server.data.Municipality;
 import net.fexcraft.mod.nvr.server.data.Nation;
 import net.fexcraft.mod.nvr.server.data.Player;
@@ -42,7 +43,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -61,7 +61,7 @@ public class NVR {
 	public static final String DEF_UUID = "66e70cb7-1d96-487c-8255-5c2d7a2b6a0e";
 	public static final String CONSOLE_UUID = "f78a4d8d-d51b-4b39-98a3-230f2de0c670";
 	//public static Sql SQL;
-	public static File PATH, CHUNK_DIR, DISTRICT_DIR, MUNICIPALITY_DIR, PROVINCE_DIR, NATION_DIR, IMAGE_DIR;
+	public static File PATH, CHUNK_DIR, DISTRICT_DIR, MUNICIPALITY_DIR, PROVINCE_DIR, NATION_DIR, IMAGE_DIR, MESSAGE_DIR;
 	public static final Log LOGGER = new Log("NVR", "&0[&4NVR&0]&7 ");
 	public static WebServer webserver;
 	private static Pregen pregen = new Pregen();
@@ -71,6 +71,7 @@ public class NVR {
 	public static final TreeMap<Integer, Municipality> MUNICIPALITIES = new TreeMap<Integer, Municipality>();
 	public static final TreeMap<Integer, Province> PROVINCES = new TreeMap<Integer, Province>();
 	public static final TreeMap<Integer, Nation> NATIONS = new TreeMap<Integer, Nation>();
+	public static final TreeMap<UUID, Message> MESSAGES = new TreeMap<UUID, Message>();
 	
 	@Mod.EventHandler
 	public static void preInit(FMLPreInitializationEvent event){
@@ -86,6 +87,7 @@ public class NVR {
 		NATION_DIR = cine(new File(PATH, "nations/"));
 		NATION_DIR = cine(new File(PATH, "nations/"));
 		IMAGE_DIR = cine(new File(PATH, "image-cache/"));
+		MESSAGE_DIR = cine(new File(PATH, "messages/"));
 		//
 		PermManager.setEnabled(MODID);
 	}
@@ -103,7 +105,7 @@ public class NVR {
 		MinecraftForge.EVENT_BUS.register(new ChunkEvents());
 		MinecraftForge.EVENT_BUS.register(new PlayerEvents());
 		//
-		MinecraftForge.EVENT_BUS.register(pregen);
+		//MinecraftForge.EVENT_BUS.register(pregen);
 		//
 		Permissions.register();
 		PlayerPerms.addAdditionalData(Player.class);
@@ -291,8 +293,10 @@ public class NVR {
 			DISTRICTS.put(0, dis);
 		}
 		//
-		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
-		pregen.load();
+		//ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
+		//pregen.load();
+		//
+		//TODO load messages
 	}
 	
 	@Mod.EventHandler
@@ -309,6 +313,7 @@ public class NVR {
 		DISTRICTS.values().forEach((dis) -> {
 			dis.save();
 		});
+		MESSAGES.values().forEach(msg -> msg.save());
 		/*CHUNKS.values().forEach((chunk) -> {
 			chunk.save();
 		});*/ //Actually they should be unloaded on server stop, so another event handles this.

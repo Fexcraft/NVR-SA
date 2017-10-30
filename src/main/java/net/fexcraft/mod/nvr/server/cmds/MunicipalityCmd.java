@@ -279,7 +279,7 @@ public class MunicipalityCmd extends CommandBase {
 				}
 				UUID id = Sender.getUUID(print, sender, args[2], null);
 				if(id == null){
-					print.chat(sender, "Player not found.");
+					print.chat(sender, "UUID not found.");
 					break;
 				}
 				mun.citizens.remove(id);
@@ -291,6 +291,17 @@ public class MunicipalityCmd extends CommandBase {
 				else{
 					Sender.serverMessage(NVR.getPlayerData(player).getNick(sender) + "&7 kicked " + args[2] + " from the municipality!");
 				}
+			}
+			case "invite":{
+				if(args.length < 3){
+					print.chat(sender, "&8Missing &7'uuid/ign' &8Argument!");
+				}
+				UUID id = Sender.getUUID(print, sender, args[2], null);
+				if(id == null){
+					print.chat(sender, "UUID not found.");
+					break;
+				}
+				//TODO new invite message
 			}
 		}
 	}

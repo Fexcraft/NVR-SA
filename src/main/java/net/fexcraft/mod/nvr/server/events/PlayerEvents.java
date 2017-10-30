@@ -29,6 +29,8 @@ public class PlayerEvents {
 			data.lastseen = NVR.getChunk(event.player.world, event.player.getPosition()).district;
 			data.lastseenpos = event.player.getPositionVector();
 			Sender.sendLocationUpdate(event.player, Formatter.format("&7Welcome back " + data.getNick(event.player) + "&7!"), null, "green", 10);
+			//
+			Print.chat(event.player, "//TODO message(s) notification");
 		}
 		else{
 			Print.debug("DATA IS NULL!");
