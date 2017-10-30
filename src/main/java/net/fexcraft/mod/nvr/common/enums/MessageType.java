@@ -3,8 +3,8 @@ package net.fexcraft.mod.nvr.common.enums;
 public enum MessageType {
 	
 	SYSTEM,
-	INVITE;
-	
+	INVITE,
+	PRIVATE;
 	
 	public MessageType fromString(String str){
 		for(MessageType type : values()){
@@ -14,4 +14,5 @@ public enum MessageType {
 		}
 		return SYSTEM;
 	}
+	
 }
