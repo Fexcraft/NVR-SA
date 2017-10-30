@@ -8,6 +8,7 @@ import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.DistrictType;
 import net.fexcraft.mod.nvr.server.NVR;
+import net.fexcraft.mod.nvr.server.data.Chunk;
 import net.fexcraft.mod.nvr.server.data.District;
 import net.fexcraft.mod.nvr.server.data.Municipality;
 import net.fexcraft.mod.nvr.server.util.Sender;
@@ -83,6 +84,17 @@ public class DistrictCmd extends CommandBase {
 				print.chat(sender, "NAME NULL, ERROR;");
 				return;
 			}
+			//
+			Chunk ck = isp ? NVR.getChunk(player) : null;
+			if(ck == null){
+				print.chat(sender, "CHUNK, NULL;");
+				return;
+			}
+			if(ck.district.municipality.id != mun.id){
+				print.chat(sender, "Chunk's current district is part of another Municipality.");
+				return;
+			}
+			//
 			District dis = new District();
 			dis.id = NVR.DISTRICTS.lastKey() + 1;
 			dis.type = DistrictType.UNSPECIFIED;
@@ -99,6 +111,10 @@ public class DistrictCmd extends CommandBase {
 			dis.price = 0;
 			NVR.DISTRICTS.put(dis.id, dis);
 			print.chat(sender, "District created with ID '" + dis.id + "'!");
+			Sender.serverMessage("&7" + NVR.getPlayerData(player).getNick(sender) + " created &9'" + name + "' &7(district:" + dis.id + ")");
+			//
+			ck.district = dis;
+			ck.changed = Time.getDate();
 			return;
 		}
 		District dis = NVR.getDistrict(args, 0);

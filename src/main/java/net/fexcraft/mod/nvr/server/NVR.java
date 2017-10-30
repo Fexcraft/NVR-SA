@@ -23,6 +23,7 @@ import net.fexcraft.mod.nvr.common.enums.NationType;
 import net.fexcraft.mod.nvr.server.cmds.ClaimCmd;
 import net.fexcraft.mod.nvr.server.cmds.DistrictCmd;
 import net.fexcraft.mod.nvr.server.cmds.InfoCmd;
+import net.fexcraft.mod.nvr.server.cmds.MunicipalityCmd;
 import net.fexcraft.mod.nvr.server.data.Chunk;
 import net.fexcraft.mod.nvr.server.data.District;
 import net.fexcraft.mod.nvr.server.data.DoubleKey;
@@ -115,6 +116,7 @@ public class NVR {
 		event.registerServerCommand(new InfoCmd());
 		event.registerServerCommand(new ClaimCmd());
 		event.registerServerCommand(new DistrictCmd());
+		event.registerServerCommand(new MunicipalityCmd());
 		//
 		webserver = new WebServer();
 	}

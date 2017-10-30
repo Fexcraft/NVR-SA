@@ -76,7 +76,8 @@ public class Chunk {
 
 	public final void save(){
 		try{
-			JsonObject obj = new JsonObject();
+			File file = getFile(x, z);
+			JsonObject obj = JsonUtil.get(file);
 			obj.addProperty("type", type.name());
 			obj.addProperty("district", district.id);
 			obj.addProperty("claimer", claimer.toString());
@@ -88,7 +89,7 @@ public class Chunk {
 			obj.addProperty("tax", tax);
 			//
 			obj.addProperty("last_save", Time.getDate());
-			JsonUtil.write(getFile(x, z), obj);
+			JsonUtil.write(file, obj);
 		}
 		catch(Exception e){
 			e.printStackTrace();

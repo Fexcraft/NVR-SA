@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import net.fexcraft.mod.lib.network.PacketHandler;
 import net.fexcraft.mod.lib.network.packet.PacketNBTTagCompound;
+import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.nvr.server.NVR;
@@ -20,7 +21,7 @@ import net.minecraft.util.text.TextComponentString;
 public class Sender {
 	
 	public static final void serverMessage(String string){
-		Static.getServer().getPlayerList().sendMessage(new TextComponentString(string));
+		Static.getServer().getPlayerList().sendMessage(new TextComponentString(Formatter.format(string)));
 	}
 	
 	public static final void sendLocationUpdate(EntityPlayer player, String ms, String mg, String color, Integer time){
@@ -82,7 +83,7 @@ public class Sender {
 			catch(Exception ex){
 				log.chat(sender, e.getMessage());
 				log.chat(sender, ex.getMessage());
-				return UUID.fromString(def.toString());
+				return def == null ? null : UUID.fromString(def.toString());
 			}
 			//log.chat(sender, e.getMessage());
 			//return UUID.fromString(def.toString());

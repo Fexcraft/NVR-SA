@@ -34,7 +34,7 @@ public class Pregen implements LoadingCallback {
 	public static Ticket ticket;
 	private static int x, z;
 	private static ChunkPos[] cpos = new ChunkPos[16], opos = new ChunkPos[16];
-	private static boolean done;
+	private static boolean done = true;
 	
 	public void continueGen(){
 		if(done){

@@ -55,7 +55,8 @@ public class District {
 
 	public void save(){
 		try{
-			JsonObject obj = new JsonObject();
+			File file = getFile(id);
+			JsonObject obj = JsonUtil.get(file);
 			obj.addProperty("type", type.name());
 			obj.addProperty("name", name);
 			obj.addProperty("municipality", municipality.id);
@@ -70,7 +71,7 @@ public class District {
 			obj.addProperty("price", price);
 			//
 			obj.addProperty("last_save", Time.getDate());
-			JsonUtil.write(getFile(id), obj);
+			JsonUtil.write(file, obj);
 		}
 		catch(Exception e){
 			e.printStackTrace();

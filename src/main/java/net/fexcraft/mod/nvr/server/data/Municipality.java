@@ -12,6 +12,7 @@ import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.MunicipalityType;
 import net.fexcraft.mod.nvr.server.NVR;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class Municipality {
 	
@@ -28,6 +29,7 @@ public class Municipality {
 	public ArrayList<UUID> citizens = new ArrayList<UUID>();
 	public double citizentax;
 	public Account account;
+	public boolean open;
 	
 	public Municipality(){}
 	
@@ -50,6 +52,7 @@ public class Municipality {
 		mun.citizentax = JsonUtil.getIfExists(obj, "citizentax", 0).doubleValue();
 		mun.icon = JsonUtil.getIfExists(obj, "icon", "");
 		mun.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
+		mun.open = JsonUtil.getIfExists(obj, "open", false);
 		//
 		mun.account = Account.getAccountManager().loadAccount("municipality", "municipality:" + mun.id);
 		//
@@ -63,7 +66,8 @@ public class Municipality {
 	public final void save(){
 		Account.getAccountManager().saveAccount(account);
 		try{
-			JsonObject obj = new JsonObject();
+			File file = getFile(id);
+			JsonObject obj = JsonUtil.get(file);
 			obj.addProperty("id", id);
 			obj.addProperty("name", name);
 			obj.addProperty("type", type.name());
@@ -77,9 +81,10 @@ public class Municipality {
 			obj.addProperty("citizentax", citizentax);
 			obj.addProperty("icon", icon == null ? "" : icon);
 			obj.addProperty("color", colour);
+			obj.addProperty("open", open);
 			//
 			obj.addProperty("last_save", Time.getDate());
-			JsonUtil.write(getFile(id), obj);
+			JsonUtil.write(file, obj);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -88,6 +93,11 @@ public class Municipality {
 
 	public long districts(){
 		return NVR.DISTRICTS.values().stream().filter(dis -> dis.municipality.id == this.id).count();
+	}
+
+	public boolean canEdit(EntityPlayer entityplayer){
+		Player player = NVR.getPlayerData(entityplayer);
+		return player == null ? false : (management.contains(player.uuid) || province.ruler.equals(player.uuid) || province.nation.canEditMunicipality(player.uuid));
 	}
 	
 }

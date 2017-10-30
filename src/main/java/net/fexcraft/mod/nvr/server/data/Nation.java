@@ -63,7 +63,8 @@ public class Nation {
 	public final void save(){
 		Account.getAccountManager().saveAccount(account);
 		try{
-			JsonObject obj = new JsonObject();
+			File file = getFile(id);
+			JsonObject obj = JsonUtil.get(file);
 			obj.addProperty("id", id);
 			obj.addProperty("name", name);
 			obj.addProperty("icon", icon == null ? "" : icon);
@@ -82,7 +83,7 @@ public class Nation {
 			obj.addProperty("color", colour);
 			//
 			obj.addProperty("last_save", Time.getDate());
-			JsonUtil.write(getFile(id), obj);
+			JsonUtil.write(file, obj);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -117,6 +118,17 @@ public class Nation {
 	}
 
 	public boolean canEditDistrict(UUID uuid){
+		switch(type){
+			case ANARCHY: return false;
+			case AUTOCRACY: return incharge.equals(uuid);
+			case DEMOCRACY: return false;
+			case MONARCHY: return incharge.equals(uuid) || gov.contains(uuid);
+			default: break;
+		}
+		return false;
+	}
+
+	public boolean canEditMunicipality(UUID uuid){
 		switch(type){
 			case ANARCHY: return false;
 			case AUTOCRACY: return incharge.equals(uuid);
