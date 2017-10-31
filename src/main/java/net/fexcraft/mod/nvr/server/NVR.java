@@ -16,6 +16,7 @@ import net.fexcraft.mod.lib.perms.player.PlayerPerms;
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
+import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.DistrictType;
 import net.fexcraft.mod.nvr.common.enums.MunicipalityType;
@@ -71,7 +72,7 @@ public class NVR {
 	public static final TreeMap<Integer, Municipality> MUNICIPALITIES = new TreeMap<Integer, Municipality>();
 	public static final TreeMap<Integer, Province> PROVINCES = new TreeMap<Integer, Province>();
 	public static final TreeMap<Integer, Nation> NATIONS = new TreeMap<Integer, Nation>();
-	public static final TreeMap<UUID, Message> MESSAGES = new TreeMap<UUID, Message>();
+	public static final ArrayList<Message> MESSAGES = new ArrayList<Message>();
 	
 	@Mod.EventHandler
 	public static void preInit(FMLPreInitializationEvent event){
@@ -296,7 +297,16 @@ public class NVR {
 		//ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
 		//pregen.load();
 		//
-		//TODO load messages
+		Arrays.asList(MESSAGE_DIR.listFiles()).forEach((messagefile) -> {
+			JsonElement obj = JsonUtil.read((File)messagefile, false);
+			if(obj != null){
+				Message msg = new Message(obj.getAsJsonObject());
+				if(!msg.read){
+					MESSAGES.add(msg);
+				}
+			}
+		});
+		//
 	}
 	
 	@Mod.EventHandler
@@ -313,7 +323,7 @@ public class NVR {
 		DISTRICTS.values().forEach((dis) -> {
 			dis.save();
 		});
-		MESSAGES.values().forEach(msg -> msg.save());
+		MESSAGES.forEach(msg -> msg.save());
 		/*CHUNKS.values().forEach((chunk) -> {
 			chunk.save();
 		});*/ //Actually they should be unloaded on server stop, so another event handles this.

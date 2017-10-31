@@ -6,7 +6,7 @@ public enum MessageType {
 	INVITE,
 	PRIVATE;
 	
-	public MessageType fromString(String str){
+	public static MessageType fromString(String str){
 		for(MessageType type : values()){
 			if(str.equals(type.name())){
 				return type;

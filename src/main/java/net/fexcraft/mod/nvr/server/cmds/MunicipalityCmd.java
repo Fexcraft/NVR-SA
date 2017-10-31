@@ -2,16 +2,20 @@ package net.fexcraft.mod.nvr.server.cmds;
 
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
+
 import net.fexcraft.mod.fsmm.account.AccountManager.Account;
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
 import net.fexcraft.mod.nvr.common.enums.DistrictType;
+import net.fexcraft.mod.nvr.common.enums.MessageType;
 import net.fexcraft.mod.nvr.common.enums.MunicipalityType;
 import net.fexcraft.mod.nvr.server.NVR;
 import net.fexcraft.mod.nvr.server.data.Chunk;
 import net.fexcraft.mod.nvr.server.data.District;
+import net.fexcraft.mod.nvr.server.data.Message;
 import net.fexcraft.mod.nvr.server.data.Municipality;
 import net.fexcraft.mod.nvr.server.data.Player;
 import net.fexcraft.mod.nvr.server.util.Sender;
@@ -52,7 +56,7 @@ public class MunicipalityCmd extends CommandBase {
 			print.chat(sender, InfoCmd.space);
 			print.chat(sender, "/mun create <name...>");
 			print.chat(sender, "/mun <id> invite <playername>");
-			print.chat(sender, "/mun <id> kick <playername>");
+			print.chat(sender, "/mun <id> kick <playername> <optional:time-in-minutes>");
 			return;
 		}
 		boolean isp = sender.getCommandSenderEntity() instanceof EntityPlayer;
@@ -301,9 +305,29 @@ public class MunicipalityCmd extends CommandBase {
 					print.chat(sender, "UUID not found.");
 					break;
 				}
-				//TODO new invite message
+				JsonObject obj = new JsonObject();
+				obj.addProperty("type", "invite");
+				obj.addProperty("to", "municipality");
+				obj.addProperty("toid", mun.id);
+				obj.addProperty("from", player.getGameProfile().getId().toString());
+				obj.addProperty("expires", args.length >= 4 ? (Integer.parseInt(args[3]) * 1000) : 0);
+				Message msg = new Message();
+				msg.read = false;
+				msg.content = "&7You are invited to join the Municipality of &9" + mun.name;
+				msg.function = obj;
+				msg.receiver = id;
+				msg.type = MessageType.INVITE;
+				msg.created = Time.getDate();
+				NVR.MESSAGES.add(msg);
+				print.chat(sender, "Invite sent.");
+				if(Static.getServer().getPlayerList().getPlayerByUUID(id) != null){
+					print.chat(Static.getServer().getPlayerList().getPlayerByUUID(id), "&7You got a new invitation! &8/ms");
+				}
+				
 			}
+			
 		}
+		
 	}
 	
 }

@@ -1,11 +1,15 @@
 package net.fexcraft.mod.nvr.server.events;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.math.Time;
+import net.fexcraft.mod.nvr.common.enums.MessageType;
 import net.fexcraft.mod.nvr.server.NVR;
 import net.fexcraft.mod.nvr.server.data.Chunk;
+import net.fexcraft.mod.nvr.server.data.Message;
 import net.fexcraft.mod.nvr.server.data.Player;
 import net.fexcraft.mod.nvr.server.util.Permissions;
 import net.fexcraft.mod.nvr.server.util.Sender;
@@ -30,7 +34,17 @@ public class PlayerEvents {
 			data.lastseenpos = event.player.getPositionVector();
 			Sender.sendLocationUpdate(event.player, Formatter.format("&7Welcome back " + data.getNick(event.player) + "&7!"), null, "green", 10);
 			//
-			Print.chat(event.player, "//TODO message(s) notification");
+			ArrayList<Message> list = (ArrayList<Message>)Arrays.asList((Message[])NVR.MESSAGES.stream().filter(p -> p.receiver.equals(data.uuid)).toArray());
+			long sysmsgs = list.stream().filter(pre -> pre.type == MessageType.SYSTEM).count();
+			long invmsgs = list.stream().filter(pre -> pre.type == MessageType.INVITE).count();
+			long primsgs = list.stream().filter(pre -> pre.type == MessageType.PRIVATE).count();
+			String str =
+					  (sysmsgs <= 0 ? "" : "&a" + sysmsgs + " &7new System messages.\n")
+					+ (invmsgs <= 0 ? "" : "&a" + invmsgs + " &7new Invites.\n")
+					+ (primsgs <= 0 ? "" : "&a" + primsgs + " &7new Private Messages.\n");
+			if(str.length() > 0){
+				Print.chat(event.player, str + "&8/ms");
+			}
 		}
 		else{
 			Print.debug("DATA IS NULL!");
