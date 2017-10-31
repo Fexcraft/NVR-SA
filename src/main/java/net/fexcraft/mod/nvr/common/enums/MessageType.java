@@ -14,5 +14,21 @@ public enum MessageType {
 		}
 		return SYSTEM;
 	}
+
+	public static MessageType fromUnknown(String string){
+		switch(string){
+			case "s": case "sys": case "system":{
+				return SYSTEM;
+			}
+			case "i": case "inv": case "invite":{
+				return INVITE;
+			}
+			case "m": case "msg": case "messages":{
+				return PRIVATE;
+			}
+			case "*": case "a": case "all":
+			default: return null;
+		}
+	}
 	
 }

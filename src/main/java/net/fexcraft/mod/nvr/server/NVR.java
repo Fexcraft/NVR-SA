@@ -24,6 +24,7 @@ import net.fexcraft.mod.nvr.common.enums.NationType;
 import net.fexcraft.mod.nvr.server.cmds.ClaimCmd;
 import net.fexcraft.mod.nvr.server.cmds.DistrictCmd;
 import net.fexcraft.mod.nvr.server.cmds.InfoCmd;
+import net.fexcraft.mod.nvr.server.cmds.MessageCmd;
 import net.fexcraft.mod.nvr.server.cmds.MunicipalityCmd;
 import net.fexcraft.mod.nvr.server.data.Chunk;
 import net.fexcraft.mod.nvr.server.data.District;
@@ -120,6 +121,7 @@ public class NVR {
 		event.registerServerCommand(new ClaimCmd());
 		event.registerServerCommand(new DistrictCmd());
 		event.registerServerCommand(new MunicipalityCmd());
+		event.registerServerCommand(new MessageCmd());
 		//
 		webserver = new WebServer();
 	}
@@ -480,6 +482,10 @@ public class NVR {
 	
 	public static NVR getInstance(){
 		return INSTANCE;
+	}
+
+	public static UUID getConsoleUUID(){
+		return UUID.fromString(CONSOLE_UUID);
 	}
 	
 }

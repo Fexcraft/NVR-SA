@@ -271,7 +271,7 @@ public class MunicipalityCmd extends CommandBase {
 			}
 			case "types":{
 				print.chat(sender, InfoCmd.space);
-				print.chat(sender, "District Types:");
+				print.chat(sender, "Municipality Types:");
 				for(DistrictType type : DistrictType.values()){
 					print.chat(sender, "&6> &9" + type.name());
 				}
@@ -305,25 +305,30 @@ public class MunicipalityCmd extends CommandBase {
 					print.chat(sender, "UUID not found.");
 					break;
 				}
+				
+				//TODO make Message.newInvite(type, string/id);
+				
 				JsonObject obj = new JsonObject();
 				obj.addProperty("type", "invite");
 				obj.addProperty("to", "municipality");
 				obj.addProperty("toid", mun.id);
-				obj.addProperty("from", player.getGameProfile().getId().toString());
 				obj.addProperty("expires", args.length >= 4 ? (Integer.parseInt(args[3]) * 1000) : 0);
+				obj.addProperty("usage", "Reply with either `accept` or `deny`.\n&o/ms func invite <list-id> <accept/deny>");
 				Message msg = new Message();
 				msg.read = false;
 				msg.content = "&7You are invited to join the Municipality of &9" + mun.name;
+				msg.title = "Invite (M)";
 				msg.function = obj;
 				msg.receiver = id;
+				msg.sender = isp ? player.getGameProfile().getId() : NVR.getConsoleUUID();
 				msg.type = MessageType.INVITE;
 				msg.created = Time.getDate();
+				msg.save();
 				NVR.MESSAGES.add(msg);
 				print.chat(sender, "Invite sent.");
 				if(Static.getServer().getPlayerList().getPlayerByUUID(id) != null){
 					print.chat(Static.getServer().getPlayerList().getPlayerByUUID(id), "&7You got a new invitation! &8/ms");
 				}
-				
 			}
 			
 		}
