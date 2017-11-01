@@ -1,15 +1,20 @@
 package net.fexcraft.mod.nvr.server.data;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
+import net.fexcraft.mod.lib.util.common.Log;
+import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.nvr.common.enums.MessageType;
 import net.fexcraft.mod.nvr.server.NVR;
+import net.fexcraft.mod.nvr.server.util.Sender;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class Message {
 	
@@ -39,7 +44,7 @@ public class Message {
 	
 	public void save(){
 		try{
-			File file = new File(NVR.DISTRICT_DIR, receiver.toString() + "_" + created + ".json");
+			File file = new File(NVR.MESSAGE_DIR, created + "_" + receiver.toString() + ".json");
 			JsonObject obj = JsonUtil.get(file);
 			obj.addProperty("read", read);
 			if(!(function == null)){
@@ -55,6 +60,7 @@ public class Message {
 		}
 		catch(Exception e){
 			e.printStackTrace();
+			Static.stop();
 		}
 	}
 	
@@ -71,14 +77,38 @@ public class Message {
 		this.setRead();
 	}
 	
-	public void processFunction(String str){
+	public void processFunction(Log print, ICommandSender sender, String str, EntityPlayer player){
 		switch(type){
 			case INVITE:{
 				if(str == null){
-					//
+					print.chat(sender, "Available commands: accept, deny.");
 				}
 				else switch(str){
-					//
+					case "accept":{
+						if(this.function.get("to").getAsString().equals("municipality")){
+							Municipality mun = NVR.MUNICIPALITIES.get(this.function.get("toid").getAsInt());
+							if(mun != null){
+								if(player == null){
+									print.chat(sender, "Only executable by an ingame-player.");
+									break;
+								}
+								NVR.getPlayerData(player).municipality = mun;
+								NVR.getPlayerData(player).save(player.getGameProfile().getId());
+								print.chat(sender, "Done.");
+								Sender.serverMessage(NVR.getPlayerData(player).getNick(sender) + " joined the Municipality of " + mun.name);
+							}
+							else{
+								print.chat(sender, "Municipality not found.");
+							}
+						}
+						this.setRead("accepted");
+						break;
+					}
+					case "deny":{
+						print.chat(sender, "Diened.");
+						this.setRead("denied");
+						break;
+					}
 				}
 				break;
 			}
@@ -102,12 +132,19 @@ public class Message {
 		return false;
 	}
 	
-	public static ArrayList<Message> getAsList(UUID uuid, MessageType type){
-		return (ArrayList<Message>)Arrays.asList((Message[])NVR.MESSAGES.stream().filter(p -> p.receiver.equals(uuid) && (type == null ? true : p.type == type)).toArray());
+	public static List<Message> getAsList(UUID uuid, MessageType type){
+		return Arrays.asList(NVR.MESSAGES.stream().filter(p -> p.receiver.equals(uuid) && (type == null ? true : p.type == type)).toArray(Message[]::new));
 	}
 	
-	public static long count(ArrayList<Message> list, MessageType type){
+	public static long count(List<Message> list, MessageType type){
 		return list.stream().filter(pre -> pre.type == type).count();
+	}
+
+	public void notifyIfOnline(Log print){
+		EntityPlayer player = Static.getServer().getPlayerList().getPlayerByUUID(receiver);
+		if(player != null){
+			print.chat(player, "You got a new message in your inbox! (/ms)");
+		}
 	}
 	
 }

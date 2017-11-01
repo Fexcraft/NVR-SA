@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 
 import net.fexcraft.mod.fsmm.account.AccountManager.Account;
 import net.fexcraft.mod.lib.perms.PermManager;
+import net.fexcraft.mod.lib.perms.PermissionNode;
 import net.fexcraft.mod.lib.perms.player.PlayerPerms;
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
@@ -92,6 +93,7 @@ public class NVR {
 		MESSAGE_DIR = cine(new File(PATH, "messages/"));
 		//
 		PermManager.setEnabled(MODID);
+		PermManager.add("nvr.admin", PermissionNode.Type.BOOLEAN, false, false);
 	}
 	
 	private static final File cine(File file){

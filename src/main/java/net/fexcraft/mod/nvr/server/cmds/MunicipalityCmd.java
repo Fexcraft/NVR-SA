@@ -145,6 +145,10 @@ public class MunicipalityCmd extends CommandBase {
 			return;
 		}
 		Municipality mun = NVR.getMunicipality(args, 0);
+		if(mun == null){
+			print.chat(sender, "Municipality not found.");
+			return;
+		}
 		switch(args[1]){
 			case "set":{
 				if(args.length < 3){
@@ -325,6 +329,7 @@ public class MunicipalityCmd extends CommandBase {
 				msg.created = Time.getDate();
 				msg.save();
 				NVR.MESSAGES.add(msg);
+				msg.notifyIfOnline(print);
 				print.chat(sender, "Invite sent.");
 				if(Static.getServer().getPlayerList().getPlayerByUUID(id) != null){
 					print.chat(Static.getServer().getPlayerList().getPlayerByUUID(id), "&7You got a new invitation! &8/ms");

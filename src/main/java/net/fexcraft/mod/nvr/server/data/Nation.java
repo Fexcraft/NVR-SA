@@ -50,7 +50,7 @@ public class Nation {
 		nat.changed = JsonUtil.getIfExists(obj, "changed", 0).longValue();
 		nat.prev_income = JsonUtil.getIfExists(obj, "previncome", 0).doubleValue();
 		nat.neighbors = JsonUtil.jsonArrayToIntegerArray(JsonUtil.getIfExists(obj, "neighbors", new JsonArray()).getAsJsonArray());
-		nat.account = Account.getAccountManager().loadAccount("nation", "nation:" + nat.id);
+		nat.account = Account.getAccountManager().getAccountOf("nation", "nation:" + nat.id);
 		nat.parent = NVR.getNation(JsonUtil.getIfExists(obj, "parent", -1).intValue());
 		nat.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
 		return nat;

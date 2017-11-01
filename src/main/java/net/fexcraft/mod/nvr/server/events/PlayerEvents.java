@@ -1,6 +1,7 @@
 package net.fexcraft.mod.nvr.server.events;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import net.fexcraft.mod.lib.util.common.Formatter;
 import net.fexcraft.mod.lib.util.common.Print;
 import net.fexcraft.mod.lib.util.common.Static;
@@ -33,16 +34,16 @@ public class PlayerEvents {
 			data.lastseenpos = event.player.getPositionVector();
 			Sender.sendLocationUpdate(event.player, Formatter.format("&7Welcome back " + data.getNick(event.player) + "&7!"), null, "green", 10);
 			//
-			ArrayList<Message> list = Message.getAsList(data.uuid, null);
+			List<Message> list = Message.getAsList(data.uuid, null);
 			long sysmsgs = Message.count(list, MessageType.SYSTEM);
 			long invmsgs = Message.count(list, MessageType.INVITE);
 			long primsgs = Message.count(list, MessageType.PRIVATE);
 			String str =
 					  (sysmsgs <= 0 ? "" : "&a" + sysmsgs + " &7new System messages.\n")
 					+ (invmsgs <= 0 ? "" : "&a" + invmsgs + " &7new Invites.\n")
-					+ (primsgs <= 0 ? "" : "&a" + primsgs + " &7new Private Messages.\n");
+					+ (primsgs <= 0 ? "" : "&a" + primsgs + " &7new Private Messages.");
 			if(str.length() > 0){
-				Print.chat(event.player, str + "&8/ms");
+				Print.chat(event.player, "&8/ms view <type/all>\n" + str);
 			}
 		}
 		else{

@@ -54,7 +54,7 @@ public class Municipality {
 		mun.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
 		mun.open = JsonUtil.getIfExists(obj, "open", false);
 		//
-		mun.account = Account.getAccountManager().loadAccount("municipality", "municipality:" + mun.id);
+		mun.account = Account.getAccountManager().getAccountOf("municipality", "municipality:" + mun.id);
 		//
 		return mun;
 	}
