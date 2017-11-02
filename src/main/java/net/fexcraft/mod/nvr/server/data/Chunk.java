@@ -106,6 +106,26 @@ public class Chunk {
 		this.claimed = Time.getDate();
 		this.changed = Time.getDate();
 		//
+		Chunk ck = null;
+		for(int i = x - 1; i < x + 2; i++){
+			for(int j = z - 1; j < z + 2; j++){
+				if((ck = NVR.getChunk(i, j)) != null){
+					if(ck.district.id != district.id && !district.neighbors.contains(ck.district.id)){
+						district.neighbors.add(ck.district.id);
+					}
+					if(ck.district.municipality.id != district.municipality.id && !district.municipality.neighbors.contains(ck.district.municipality.id)){
+						district.municipality.neighbors.add(ck.district.id);
+					}
+					if(ck.district.municipality.province.id != district.municipality.province.id && !district.municipality.province.neighbors.contains(ck.district.municipality.province.id)){
+						district.municipality.province.neighbors.add(ck.district.id);
+					}
+					if(ck.district.municipality.province.nation.id != district.municipality.province.nation.id && !district.municipality.province.nation.neighbors.contains(ck.district.municipality.province.nation.id)){
+						district.municipality.province.nation.neighbors.add(ck.district.id);
+					}
+				}
+			}
+		}
+		//
 		ImageCache.updateChunk(Static.getServer().getEntityWorld(), this, Mode.CLAIM);
 		ImageCache.updateChunk(Static.getServer().getEntityWorld(), this, Mode.TYPE);
 		ImageCache.updateChunk(Static.getServer().getEntityWorld(), this, Mode.GEOGRAPHIC);
