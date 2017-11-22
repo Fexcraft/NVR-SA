@@ -35,7 +35,7 @@ public class NVR {
 	}
 	
 	@Mod.EventHandler
-	public static void serverLoad(FMLServerStartingEvent event){
+	public static void serverLoad(FMLServerStartingEvent event) throws Exception {
 		if(event.getSide().isClient()){
 			//net.fexcraft.mod.nvr.client.NVR.serverLoad(event);
 		}

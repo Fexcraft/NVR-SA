@@ -15,26 +15,26 @@ import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 public class Pregen implements LoadingCallback {
 	
 	@SubscribeEvent
 	public void onTick(TickEvent.ServerTickEvent event){
-		Pregen gen = this;
-		//if(event.phase == Phase.START){
+		if(event.phase == Phase.START){
 			Static.getServer().addScheduledTask(new Runnable(){
 				@Override
 				public void run(){
-					gen.continueGen();
+					continueGen();
 				}
 			});
-		//}
+		}
 	}
 	
 	public static Ticket ticket;
-	private static int x, z;
-	private static ChunkPos[] cpos = new ChunkPos[16], opos = new ChunkPos[16];
-	private static boolean done = true;
+	private static int x, z, l = 8;
+	private static ChunkPos[] cpos = new ChunkPos[l], opos = new ChunkPos[l];
+	private static boolean done = false;
 	
 	public void continueGen(){
 		if(done){
@@ -44,7 +44,7 @@ public class Pregen implements LoadingCallback {
 			ticket = ForgeChunkManager.requestTicket(NVR.INSTANCE, Static.getServer().worlds[0], ForgeChunkManager.Type.NORMAL);
 		}
 		if(cpos[0] == null){
-			for(int i = 0; i < 16; i++){
+			for(int i = 0; i < l; i++){
 				cpos[i] = new ChunkPos(x + i, z);
 			}
 		}
@@ -53,7 +53,7 @@ public class Pregen implements LoadingCallback {
 			for(ChunkPos pos : opos){
 				ForgeChunkManager.unforceChunk(ticket, pos);
 			}
-			for(int i = 0; i < 16; i++){
+			for(int i = 0; i < l; i++){
 				cpos[i] = new ChunkPos(x + i, z);
 			}
 		}
@@ -61,7 +61,7 @@ public class Pregen implements LoadingCallback {
 			ForgeChunkManager.forceChunk(ticket, pos);
 		}
 		if(x <= 640){
-			x += 16;
+			x += l;
 		}
 		if(x > 640){
 			x = -640;
@@ -71,7 +71,7 @@ public class Pregen implements LoadingCallback {
 		if(z > 640){
 			done = true;
 		}
-		NVR.LOGGER.log("Generating chunks " + x + " - " + (x + 16) + "x | " + z + "z;");
+		NVR.LOGGER.log("Generating chunks " + x + " - " + (x + l) + "x | " + z + "z;");
 	}
 	
 	public void load(){
@@ -83,6 +83,7 @@ public class Pregen implements LoadingCallback {
 			JsonObject obj = JsonUtil.get(file);
 			x = obj.get("x").getAsInt();
 			z = obj.get("z").getAsInt();
+			done = JsonUtil.getIfExists(obj, "done", true);
 			return;
 		}
 	}
@@ -92,6 +93,7 @@ public class Pregen implements LoadingCallback {
 		JsonObject obj = new JsonObject();
 		obj.addProperty("x", x);
 		obj.addProperty("z", z);
+		obj.addProperty("done", done);
 		JsonUtil.write(file, obj);
 	}
 

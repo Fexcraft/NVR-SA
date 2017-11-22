@@ -6,6 +6,9 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -38,7 +41,7 @@ import net.fexcraft.mod.nvr.server.data.Province;
 import net.fexcraft.mod.nvr.server.events.ChatEvents;
 import net.fexcraft.mod.nvr.server.events.ChunkEvents;
 import net.fexcraft.mod.nvr.server.events.PlayerEvents;
-import net.fexcraft.mod.nvr.server.network.WebServer;
+import net.fexcraft.mod.nvr.server.events.SessionListener;
 import net.fexcraft.mod.nvr.server.util.Permissions;
 import net.fexcraft.mod.nvr.server.util.Pregen;
 import net.fexcraft.mod.nvr.server.util.Sender;
@@ -46,6 +49,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -66,7 +70,7 @@ public class NVR {
 	//public static Sql SQL;
 	public static File PATH, CHUNK_DIR, DISTRICT_DIR, MUNICIPALITY_DIR, PROVINCE_DIR, NATION_DIR, IMAGE_DIR, MESSAGE_DIR;
 	public static final Log LOGGER = new Log("NVR", "&0[&4NVR&0]&7 ");
-	public static WebServer webserver;
+	public static Server webserver;
 	private static Pregen pregen = new Pregen();
 
 	public static final TreeMap<DoubleKey, Chunk> CHUNKS = new TreeMap<DoubleKey, Chunk>();
@@ -109,7 +113,8 @@ public class NVR {
 		MinecraftForge.EVENT_BUS.register(new ChunkEvents());
 		MinecraftForge.EVENT_BUS.register(new PlayerEvents());
 		//
-		//MinecraftForge.EVENT_BUS.register(pregen);
+		MinecraftForge.EVENT_BUS.register(pregen);
+		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
 		//
 		Permissions.register();
 		PlayerPerms.addAdditionalData(Player.class);
@@ -118,14 +123,30 @@ public class NVR {
 	}
 	
 	@Mod.EventHandler
-	public static void serverLoad(FMLServerStartingEvent event){
+	public static void serverLoad(FMLServerStartingEvent event) throws Exception {
 		event.registerServerCommand(new InfoCmd());
 		event.registerServerCommand(new ClaimCmd());
 		event.registerServerCommand(new DistrictCmd());
 		event.registerServerCommand(new MunicipalityCmd());
 		event.registerServerCommand(new MessageCmd());
 		//
-		webserver = new WebServer();
+		webserver = new Server();
+		ServerConnector http = new ServerConnector(webserver);
+		http.setHost("0.0.0.0");
+		http.setPort(8912);
+		http.setIdleTimeout(30000);
+		webserver.addConnector(http);
+		//
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/");
+		context.setResourceBase(System.getProperty("java.io.tmpdir"));
+		webserver.setHandler(context);
+		//context.addServlet(Main.class, "/webgames/mbeh");
+		//context.addServlet(MBEHSocketServlet.class, "/webgames/mbeh/socket");
+		//
+		context.getSessionHandler().addEventListener(new SessionListener());
+		webserver.start();
+		webserver.join();
 	}
 	
 	@Mod.EventHandler
@@ -314,7 +335,7 @@ public class NVR {
 	}
 	
 	@Mod.EventHandler
-	public static void serverStop(FMLServerStoppingEvent event){
+	public static void serverStop(FMLServerStoppingEvent event) throws Exception {
 		NATIONS.values().forEach((nat) -> {
 			nat.save();
 		});
@@ -331,7 +352,7 @@ public class NVR {
 		/*CHUNKS.values().forEach((chunk) -> {
 			chunk.save();
 		});*/ //Actually they should be unloaded on server stop, so another event handles this.
-		WebServer.end(0);
+		webserver.stop();
 		pregen.save();
 	}
 	
