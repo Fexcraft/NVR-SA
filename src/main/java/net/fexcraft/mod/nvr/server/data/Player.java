@@ -4,7 +4,8 @@ import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.lib.perms.player.AttachedData;
 import net.fexcraft.mod.lib.perms.player.PlayerPerms;
 import net.fexcraft.mod.lib.util.common.Print;
@@ -49,7 +50,7 @@ public class Player implements AttachedData {
 		this.lastsave = JsonUtil.getIfExists(obj, "LastSave", 0).longValue();
 		if(lastsave == 0){ lastsave = Time.getDate(); }
 		this.nick = obj.has("Nick") ? obj.get("Nick").getAsString() : null;
-		this.account = Account.getAccountManager().getAccountOf(uuid);
+		this.account = AccountManager.INSTANCE.getAccount("player", uuid.toString(), true);
 		//
 		int mun = JsonUtil.getIfExists(obj, "Municipality", -1).intValue();
 		municipality = NVR.getMunicipality(mun);
@@ -62,7 +63,7 @@ public class Player implements AttachedData {
 
 	@Override
 	public JsonObject save(UUID uuid){
-		Account.getAccountManager().saveAccount(account);
+		AccountManager.INSTANCE.saveAccount(account);
 		JsonObject obj = new JsonObject();
 		if(nick != null){ obj.addProperty("Nick", nick); }
 		obj.addProperty("LastSave", Time.getDate());
@@ -88,7 +89,7 @@ public class Player implements AttachedData {
 		player.lastsave = JsonUtil.getIfExists(obj, "LastSave", 0).longValue();
 		if(player.lastsave == 0){ player.lastsave = Time.getDate(); }
 		player.nick = obj.has("Nick") ? obj.get("Nick").getAsString() : null;
-		player.account = Account.getAccountManager().getAccountOf(uuid);
+		player.account = AccountManager.INSTANCE.getAccount("player", uuid.toString(), true);
 		//
 		int mun = JsonUtil.getIfExists(obj, "Municipality", -1).intValue();
 		player.municipality = NVR.getMunicipality(mun);

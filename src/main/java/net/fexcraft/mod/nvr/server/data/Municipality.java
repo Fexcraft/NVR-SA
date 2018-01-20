@@ -6,7 +6,8 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
@@ -54,7 +55,7 @@ public class Municipality {
 		mun.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
 		mun.open = JsonUtil.getIfExists(obj, "open", false);
 		//
-		mun.account = Account.getAccountManager().getAccountOf("municipality", "municipality:" + mun.id);
+		mun.account = AccountManager.INSTANCE.getAccount("municipality", mun.id + "", true);
 		//
 		return mun;
 	}
@@ -64,7 +65,7 @@ public class Municipality {
 	}
 	
 	public final void save(){
-		Account.getAccountManager().saveAccount(account);
+		AccountManager.INSTANCE.saveAccount(account);
 		try{
 			File file = getFile(id);
 			JsonObject obj = JsonUtil.get(file);

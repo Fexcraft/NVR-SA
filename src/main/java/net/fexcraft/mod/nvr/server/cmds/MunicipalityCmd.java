@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.lib.util.common.Log;
 import net.fexcraft.mod.lib.util.common.Static;
 import net.fexcraft.mod.lib.util.lang.ArrayList;
@@ -116,7 +116,7 @@ public class MunicipalityCmd extends CommandBase {
 			mun.citizentax = 0;
 			mun.icon = "icon";
 			mun.colour = "#f0f0f0";
-			mun.account = Account.getAccountManager().loadAccount("municipality", "municipality:" + mun.id);
+			mun.account = AccountManager.INSTANCE.getAccount("municipality", mun.id + "", true);
 			mun.open = false;
 			playerdata.municipality = mun;
 			print.chat(sender, "Municipality created with ID '" + mun.id + "'!");

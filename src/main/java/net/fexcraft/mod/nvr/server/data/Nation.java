@@ -6,7 +6,8 @@ import java.util.UUID;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.api.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.lib.util.json.JsonUtil;
 import net.fexcraft.mod.lib.util.lang.ArrayList;
 import net.fexcraft.mod.lib.util.math.Time;
@@ -50,7 +51,7 @@ public class Nation {
 		nat.changed = JsonUtil.getIfExists(obj, "changed", 0).longValue();
 		nat.prev_income = JsonUtil.getIfExists(obj, "previncome", 0).doubleValue();
 		nat.neighbors = JsonUtil.jsonArrayToIntegerArray(JsonUtil.getIfExists(obj, "neighbors", new JsonArray()).getAsJsonArray());
-		nat.account = Account.getAccountManager().getAccountOf("nation", "nation:" + nat.id);
+		nat.account = AccountManager.INSTANCE.getAccount("nation", nat.id + "",true);
 		nat.parent = NVR.getNation(JsonUtil.getIfExists(obj, "parent", -1).intValue());
 		nat.colour = JsonUtil.getIfExists(obj, "color", "#f0f0f0");
 		return nat;
@@ -61,7 +62,7 @@ public class Nation {
 	}
 	
 	public final void save(){
-		Account.getAccountManager().saveAccount(account);
+		AccountManager.INSTANCE.saveAccount(account);
 		try{
 			File file = getFile(id);
 			JsonObject obj = JsonUtil.get(file);

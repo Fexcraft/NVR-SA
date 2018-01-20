@@ -6,14 +6,10 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.fexcraft.mod.fsmm.account.AccountManager.Account;
+import net.fexcraft.mod.fsmm.util.AccountManager;
 import net.fexcraft.mod.lib.perms.PermManager;
 import net.fexcraft.mod.lib.perms.PermissionNode;
 import net.fexcraft.mod.lib.perms.player.PlayerPerms;
@@ -41,15 +37,12 @@ import net.fexcraft.mod.nvr.server.data.Province;
 import net.fexcraft.mod.nvr.server.events.ChatEvents;
 import net.fexcraft.mod.nvr.server.events.ChunkEvents;
 import net.fexcraft.mod.nvr.server.events.PlayerEvents;
-import net.fexcraft.mod.nvr.server.events.SessionListener;
 import net.fexcraft.mod.nvr.server.util.Permissions;
-import net.fexcraft.mod.nvr.server.util.Pregen;
 import net.fexcraft.mod.nvr.server.util.Sender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -70,8 +63,8 @@ public class NVR {
 	//public static Sql SQL;
 	public static File PATH, CHUNK_DIR, DISTRICT_DIR, MUNICIPALITY_DIR, PROVINCE_DIR, NATION_DIR, IMAGE_DIR, MESSAGE_DIR;
 	public static final Log LOGGER = new Log("NVR", "&0[&4NVR&0]&7 ");
-	public static Server webserver;
-	private static Pregen pregen = new Pregen();
+	//public static Server webserver;
+	//private static Pregen pregen = new Pregen();
 
 	public static final TreeMap<DoubleKey, Chunk> CHUNKS = new TreeMap<DoubleKey, Chunk>();
 	public static final TreeMap<Integer, District> DISTRICTS = new TreeMap<Integer, District>();
@@ -113,8 +106,8 @@ public class NVR {
 		MinecraftForge.EVENT_BUS.register(new ChunkEvents());
 		MinecraftForge.EVENT_BUS.register(new PlayerEvents());
 		//
-		MinecraftForge.EVENT_BUS.register(pregen);
-		ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
+		//MinecraftForge.EVENT_BUS.register(pregen);
+		//ForgeChunkManager.setForcedChunkLoadingCallback(INSTANCE, pregen);
 		//
 		Permissions.register();
 		PlayerPerms.addAdditionalData(Player.class);
@@ -130,7 +123,7 @@ public class NVR {
 		event.registerServerCommand(new MunicipalityCmd());
 		event.registerServerCommand(new MessageCmd());
 		//
-		webserver = new Server();
+		/*webserver = new Server();
 		ServerConnector http = new ServerConnector(webserver);
 		http.setHost("0.0.0.0");
 		http.setPort(8912);
@@ -146,7 +139,7 @@ public class NVR {
 		//
 		context.getSessionHandler().addEventListener(new SessionListener());
 		webserver.start();
-		webserver.join();
+		webserver.join();*/
 	}
 	
 	@Mod.EventHandler
@@ -191,7 +184,7 @@ public class NVR {
 		if(!NATIONS.containsKey(-1)){
 			Nation nat = new Nation();
 			nat.id = -1;
-			nat.account = Account.getAccountManager().loadAccount("nation", "nation:-1");
+			nat.account = AccountManager.INSTANCE.getAccount("nation", "-1", true);
 			nat.name = "No Nation";
 			nat.icon = "https://i.imgur.com/8z76Cbr.png";
 			nat.type = NationType.ANARCHY;
@@ -210,7 +203,7 @@ public class NVR {
 		if(!NATIONS.containsKey(0)){
 			Nation nat = new Nation();
 			nat.id = 0;
-			nat.account = Account.getAccountManager().loadAccount("nation", "nation:0");
+			nat.account = AccountManager.INSTANCE.getAccount("nation", "0", true);
 			nat.name = "Testarian Union";
 			nat.icon = "";
 			nat.type = NationType.MONARCHY;
@@ -260,7 +253,7 @@ public class NVR {
 			Municipality mun = new Municipality();
 			mun.id = -1;
 			mun.name = "Unnamed Place";
-			mun.account = Account.getAccountManager().loadAccount("municipality", "municipality:-1");
+			mun.account = AccountManager.INSTANCE.getAccount("municipality", "-1", true);
 			mun.icon = "https://i.imgur.com/RFGyyOD.png";
 			mun.type = MunicipalityType.ABANDONED;
 			mun.province = PROVINCES.get(-1);
@@ -276,7 +269,7 @@ public class NVR {
 			Municipality mun = new Municipality();
 			mun.id = 0;
 			mun.name = "Spawn";
-			mun.account = Account.getAccountManager().loadAccount("municipality", "municipality:0");
+			mun.account = AccountManager.INSTANCE.getAccount("municipality", "0", true);
 			mun.icon = "";//
 			mun.type = MunicipalityType.TOO_LARGE;
 			mun.province = PROVINCES.get(0);
@@ -352,8 +345,8 @@ public class NVR {
 		/*CHUNKS.values().forEach((chunk) -> {
 			chunk.save();
 		});*/ //Actually they should be unloaded on server stop, so another event handles this.
-		webserver.stop();
-		pregen.save();
+		//webserver.stop();
+		//pregen.save();
 	}
 	
 	public static final Player getPlayerData(EntityPlayer player){
